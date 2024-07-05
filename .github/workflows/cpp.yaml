@@ -34,6 +34,7 @@ jobs:
           user: ${{ secrets.YC_VM_USERNAME }}
           ssh-public-key: ${{ secrets.YC_VM_SSH_PUBLIC_KEY }}
           public-ip: false
+          runner-version: '2.308.0'
           ttl: PT24H
 
   checkout:
@@ -42,12 +43,12 @@ jobs:
     runs-on: ${{ needs.start-vm.outputs.label }}
     steps:
       - name: Checkout ytsaurus
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           path: ytsaurus
 
       - name: Checkout ydb
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: ydb-platform/ydb
           ref: 79a0619ccd71da017e02fc8ff64c1019141030ea
