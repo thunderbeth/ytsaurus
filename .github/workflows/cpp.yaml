@@ -72,7 +72,11 @@ jobs:
           echo "HERE"
           echo $HOME
           echo $USER
+          cd ~/
+          pwd
           export USER=root
+          cd ~/
+          pwd
           ls -la ~/
           ls -la /home/root/.config
           echo "HERE2"
