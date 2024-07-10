@@ -71,6 +71,8 @@ jobs:
         run: |
           echo "HERE"
           echo $HOME
+          echo $USER
+          echo "HERE2"
           if [[ $GITHUB_REF =~ main$ ]];
           then
             IMAGE_TAG=dev
