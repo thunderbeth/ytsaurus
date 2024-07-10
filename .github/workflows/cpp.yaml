@@ -69,6 +69,8 @@ jobs:
       - name: Calculate docker tag
         id: tag
         run: |
+          echo "HERE"
+          echo $HOME
           if [[ $GITHUB_REF =~ main$ ]];
           then
             IMAGE_TAG=dev
