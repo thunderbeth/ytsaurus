@@ -26,7 +26,7 @@ jobs:
           yc-sa-json-credentials: ${{ secrets.YC_SA_JSON_CREDENTIALS }}
           github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
           folder-id: ${{ vars.YC_FOLDER_ID }}
-          image-id: fd8evmtcrrqudd43uv9t
+          image-id: fd8vittlsa7u6tot12im
           zone-id: ${{ vars.YC_ZONE_ID }}
           subnet-id: ${{ vars.YC_SUBNET_ID }}
           cores: 16
@@ -74,11 +74,9 @@ jobs:
           echo $USER
           cd ~/
           pwd
-          export USER=root
-          cd ~/
-          pwd
           ls -la ~/
-          ls -la /home/root/.config
+          ls -la ~/.config
+          ls -la /root/.config
           echo "HERE2"
           if [[ $GITHUB_REF =~ main$ ]];
           then
