@@ -67,6 +67,8 @@ jobs:
     steps:
       - name: Create build directories
         run: |
+          python3 -c 'import os; print("HERE:", os.path.expanduser("~"))'
+
           for prefix in build \
                         build_yql
           do
