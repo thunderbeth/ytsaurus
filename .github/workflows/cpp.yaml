@@ -73,6 +73,9 @@ jobs:
           pushd .
           cd ~
           pwd
+          ls -la .
+          ls -la .config
+          cat .config/ya.conf
           popd
           echo "HERE2"
           if [[ $GITHUB_REF =~ main$ ]];
