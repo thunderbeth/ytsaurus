@@ -200,7 +200,7 @@ jobs:
       - name: Calculate variables
         id: vars
         run: |
-          BUILD_FLAGS="--thinlto -DCGO_ENABLED=0 -DCFLAGS=-fsized-deallocation --yt-dir=//home/devtools/cache --yt-proxy=10.131.0.11 --yt-max-cache-size=483183820800 --yt-readonly=false --yt-store --yt-put"
+          BUILD_FLAGS="--thinlto -DCGO_ENABLED=0 -DCFLAGS=-fsized-deallocation --yt-dir=//home/devtools/cache --yt-proxy=10.131.0.11 --yt-max-cache-size=483183820800 --yt-readonly=false --yt-store"
           STRIP_VALUE=no
           BUILD_TYPE=profile
           if [ "${{ matrix.build-type }}" == "release" ]
