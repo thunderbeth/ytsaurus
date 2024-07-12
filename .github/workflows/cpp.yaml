@@ -147,7 +147,7 @@ jobs:
     needs:
       - start-vm
       - checkout
-      - docker-cmake
+      - build-strawberry
     with:
       runs-on-value: ${{ needs.start-vm.outputs.label }}
       cpp-build-system: ya-make
