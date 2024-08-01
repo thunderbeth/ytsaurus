@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - stable/[0-9]+\.[0-9]+
+      - members/krock21/systempython-udf-1-test-workflow
 
 env:
   ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
@@ -139,7 +140,7 @@ jobs:
       runs-on-value: ${{ needs.start-vm.outputs.label }}
       cpp-build-system: ya-make
       build-ytsaurus: true
-      build-query-tracker: ${{ github.ref_name == 'main' }}
+      build-query-tracker: true
       build-python: true
     uses: ./.github/workflows/build-jobs.yaml
 
@@ -152,7 +153,7 @@ jobs:
     with:
       runs-on-value: ${{ needs.start-vm.outputs.label }}
       cpp-build-system: ya-make
-      publish-query-tracker: ${{ github.ref_name == 'main' }}
+      publish-query-tracker: true
       image-tag: ${{ needs.tag.outputs.image-tag }}
       nightly-image-tag: ${{ needs.tag.outputs.nightly-image-tag }}
     secrets:
@@ -223,7 +224,7 @@ jobs:
     needs:
       - stop-vm
     runs-on: ubuntu-latest
-    if: ${{ failure() }}
+    if: false
     steps:
       - name: Send telegram message
         uses: appleboy/telegram-action@master
