@@ -144,6 +144,8 @@ jobs:
       build-ytsaurus: true
       build-query-tracker: ${{ github.ref_name == 'main' }}
       build-python: true
+    secrets:
+      YA_YT_TOKEN: ${{ secrets.YA_YT_TOKEN }}
     uses: ./.github/workflows/build-jobs.yaml
 
   docker-ya-make:

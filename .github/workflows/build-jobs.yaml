@@ -31,6 +31,10 @@ on:
         required: false
         type: boolean
 
+    secrets:
+      YA_YT_TOKEN:
+        required: true
+
 jobs:
   venv:
     runs-on: ${{ inputs.runs-on-value }}
