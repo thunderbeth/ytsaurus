@@ -31,6 +31,9 @@ on:
         required: false
         type: boolean
 
+env:
+  YA_YT_TOKEN: ${{ secrets.YA_YT_TOKEN }}
+
 jobs:
   venv:
     runs-on: ${{ inputs.runs-on-value }}
