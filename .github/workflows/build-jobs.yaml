@@ -206,7 +206,7 @@ jobs:
             STRIP_VALUE=yes
             BUILD_TYPE=release
           fi
-          BUILD_FLAGS="${BUILD_FLAGS} --build=${BUILD_TYPE} --yt-dir=//home/devtools/cache --yt-proxy=10.131.0.11 --yt-store"
+          BUILD_FLAGS="${BUILD_FLAGS} --build=${BUILD_TYPE} --yt-dir=//home/devtools/cache --yt-proxy=10.131.0.11 --yt-store --yt-put"
           echo "BUILD_FLAGS=$BUILD_FLAGS" >> $GITHUB_OUTPUT
           echo "STRIP_VALUE=$STRIP_VALUE" >> $GITHUB_OUTPUT
 
