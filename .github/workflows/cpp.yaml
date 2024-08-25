@@ -137,7 +137,7 @@ jobs:
     needs:
       - start-vm
       - checkout
-      - docker-cmake
+      # - docker-cmake
     with:
       runs-on-value: ${{ needs.start-vm.outputs.label }}
       cpp-build-system: ya-make
@@ -148,7 +148,6 @@ jobs:
 
   docker-ya-make:
     name: Docker images with ya-make
-    if: false
     needs:
       - start-vm
       - tag
