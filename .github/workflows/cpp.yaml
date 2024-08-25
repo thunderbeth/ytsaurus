@@ -96,6 +96,7 @@ jobs:
     uses: ./.github/workflows/build-jobs.yaml
 
   build-cmake:
+    if: false
     name: Build with cmake
     needs:
       - start-vm
@@ -110,6 +111,7 @@ jobs:
     uses: ./.github/workflows/build-jobs.yaml
 
   docker-cmake:
+    if: false
     name: Docker images with cmake
     needs:
       - start-vm
@@ -146,6 +148,7 @@ jobs:
 
   docker-ya-make:
     name: Docker images with ya-make
+    if: false
     needs:
       - start-vm
       - tag
