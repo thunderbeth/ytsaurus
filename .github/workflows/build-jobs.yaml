@@ -197,7 +197,6 @@ jobs:
     if: ${{ inputs.cpp-build-system == 'ya-make' }}
     env:
       YA_YT_TOKEN: ${{ secrets.YA_YT_TOKEN }}
-      YT_USE_HOSTS: 0
     strategy:
       matrix:
         build-type: [release, relwithdebinfo]
