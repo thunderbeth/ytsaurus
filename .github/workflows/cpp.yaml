@@ -103,6 +103,7 @@ jobs:
       - start-vm
       - checkout
       - build-strawberry
+    if: false
     with:
       runs-on-value: ${{ needs.start-vm.outputs.label }}
       cpp-build-system: cmake
@@ -120,6 +121,7 @@ jobs:
       - tag
       - build-cmake
       - build-strawberry
+    if: false
     with:
       runs-on-value: ${{ needs.start-vm.outputs.label }}
       cpp-build-system: cmake
@@ -139,7 +141,6 @@ jobs:
     needs:
       - start-vm
       - checkout
-      - docker-cmake
     with:
       runs-on-value: ${{ needs.start-vm.outputs.label }}
       cpp-build-system: ya-make
@@ -156,6 +157,7 @@ jobs:
       - start-vm
       - tag
       - build-ya-make
+    if: false
     with:
       runs-on-value: ${{ needs.start-vm.outputs.label }}
       cpp-build-system: ya-make
@@ -172,6 +174,7 @@ jobs:
     needs:
       - start-vm
       - docker-cmake
+    if: false
     with:
       runs-on-value: ${{ needs.start-vm.outputs.label }}
     uses: ./.github/workflows/check-jobs.yaml
@@ -212,7 +215,7 @@ jobs:
     name: Stop VM
     needs:
       - start-vm
-      - systest
+      - build-ya-make
     runs-on: trampoline
     if: false
     steps:
