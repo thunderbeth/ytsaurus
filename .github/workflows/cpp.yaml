@@ -29,7 +29,7 @@ jobs:
           zone-id: ${{ vars.YC_ZONE_ID }}
           subnet-id: ${{ vars.YC_SUBNET_ID }}
           cores: 16
-          memory: 64GB
+          memory: 32GB
           core-fraction: 100
           disk-type: network-ssd-nonreplicated
           disk-size: 558GB
@@ -213,7 +213,7 @@ jobs:
       - start-vm
       - systest
     runs-on: trampoline
-    if: ${{ always() }}
+    if: false
     steps:
       - name: Stop YC runner
         uses: yc-actions/yc-github-runner@v1
@@ -229,7 +229,7 @@ jobs:
     needs:
       - stop-vm
     runs-on: ubuntu-latest
-    if: ${{ failure() }}
+    if: false
     steps:
       - name: Send telegram message
         uses: appleboy/telegram-action@master
