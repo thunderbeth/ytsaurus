@@ -278,18 +278,21 @@ jobs:
         run: |
           shopt -s expand_aliases
 
+          PS4='+ $(date -Iseconds)\011 '
+
           cd ../build_${{ inputs.cpp-build-system}}_${{ matrix.build-type }}
 
           BUILD_FLAGS="${{ steps.vars.outputs.BUILD_FLAGS }} -DSTRIP=${{ steps.vars.outputs.STRIP_VALUE }}"
-          ../ytsaurus/ytsaurus/ya make -T ${BUILD_FLAGS} --output=. ../ytsaurus/ytsaurus/yt/yql/agent/bin
+          ../ytsaurus/ytsaurus/ya make ${BUILD_FLAGS} --output=. ../ytsaurus/ytsaurus/yt/yql/agent/bin
 
           cd ../build_yql_${{ inputs.cpp-build-system}}_${{ matrix.build-type }}
 
           # TODO(nadya73): Remove it after ya fix.
-          cat ../ytsaurus/ydb/build/internal/ya.conf | grep -v bazel | grep -v "dist_cache" > ./patched.ya.conf
-          cp ./patched.ya.conf ../ytsaurus/ydb/build/internal/ya.conf
+          rm ../ytsaurus/ydb/build/internal/ya.conf
+          # cat  ../ytsaurus/ydb/build/internal/ya.conf | grep -v bazel | grep -v "dist_cache" > ./patched.ya.conf
+          # cp ./patched.ya.conf ../ytsaurus/ydb/build/internal/ya.conf
 
-          alias ydb-ya-make="../ytsaurus/ydb/ya make -T ${BUILD_FLAGS} --no-bazel-remote-store --ignore-recurses --output=."
+          alias ydb-ya-make="../ytsaurus/ydb/ya make ${BUILD_FLAGS} --ignore-recurses --output=."
 
           for path in "ydb/library/yql/tools/mrjob" \
                       "ydb/library/yql/yt/dynamic" \
@@ -325,7 +328,7 @@ jobs:
                           url_base \
                           yson2
           do
-            ydb-ya-make  ${udfs_prefix}/${udf_name}
+            ydb-ya-make ${udfs_prefix}/${udf_name}
           done
 
           export YDB_SOURCE_ROOT=$(realpath $(pwd)/../ytsaurus/ydb)
