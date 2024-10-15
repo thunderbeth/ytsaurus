@@ -220,7 +220,7 @@ if [ ${enable_debug_logging} == "true" ]; then
 fi
 
 if [ ${with_auth} == "true" ]; then
-    params="${params} --enable-auth --create-admin-user"
+    params="${params} --enable-auth --create-admin-user --native-client-supported"
 fi
 
 set +e
@@ -230,19 +230,21 @@ cluster_container=$(
         --name $yt_container_name \
         -p ${proxy_port}:80 \
         -p ${rpc_proxy_port}:${rpc_proxy_port} \
-        --rm \
         $local_cypress_dir \
         $extra_yt_docker_opts \
         $yt_image \
         --fqdn "${yt_fqdn:-${docker_hostname}}" \
-        --proxy-config "{address_resolver={enable_ipv4=%true;enable_ipv6=%false;};coordinator={public_fqdn=\"${docker_hostname}:${proxy_port}\"}}" \
+        --proxy-config "{coordinator={public_fqdn=\"${docker_hostname}:${proxy_port}\"}}" \
         --rpc-proxy-count ${rpc_proxy_count} \
         --rpc-proxy-port ${rpc_proxy_port} \
         --node-count ${node_count} \
         --queue-agent-count ${queue_agent_count} \
-        --native-client-supported \
+        --address-resolver-config "{address_resolver={enable_ipv4=%true;enable_ipv6=%false;}}"
+        --rm \
         ${params} \
 )
+
+# --driver-config "{address_resolver={enable_ipv4=%true;enable_ipv6=%false;localhost_fqdn=localhost}}" \
 
 if [ "$?" != "0" ]; then
     die "Image $yt_image failed to run. Most likely that was because the port $proxy_port is already busy, \
@@ -262,7 +264,6 @@ interface_container=$(
        $ui_image \
 )
 if [ "$?" != "0" ]; then
-    docker stop $cluster_container
     die "Image $ui_image failed to run. Most likely that was because the port $interface_port is \
 already busy, so you have to provide another port via --interface-port option."
 fi
