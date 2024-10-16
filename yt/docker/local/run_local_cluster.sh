@@ -228,6 +228,7 @@ cluster_container=$(
     docker run -itd \
         --network $network_name \
         --name $yt_container_name \
+        --rm \
         -p ${proxy_port}:80 \
         -p ${rpc_proxy_port}:${rpc_proxy_port} \
         $local_cypress_dir \
@@ -239,8 +240,7 @@ cluster_container=$(
         --rpc-proxy-port ${rpc_proxy_port} \
         --node-count ${node_count} \
         --queue-agent-count ${queue_agent_count} \
-        --address-resolver-config "{address_resolver={enable_ipv4=%true;enable_ipv6=%false;}}"
-        --rm \
+        --address-resolver-config "{address_resolver={enable_ipv4=%true;enable_ipv6=%false;}}" \
         ${params} \
 )
 
