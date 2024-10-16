@@ -299,7 +299,7 @@ def get_patched_dynamic_master_config(yt_config):
 def modify_cluster_configuration(yt_config, cluster_configuration):
     def update_address_resolver(config):
         if yt_config.address_resolver_config:
-            update_inplace(config["address_resolver"], yt_config.address_resolver_config)
+            update_inplace(config, {"address_resolver": yt_config.address_resolver_config})
 
     master = cluster_configuration["master"]
 
