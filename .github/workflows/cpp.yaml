@@ -5,7 +5,7 @@ on:
     branches:
       - main
       - stable/[0-9]+\.[0-9]+
-      - members/nadya73/components-local
+      - members/nadya73/components-local-2
 
 env:
   ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
