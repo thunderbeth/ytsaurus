@@ -205,7 +205,12 @@ COPY ./credits/chyt-controller.CREDITS /usr/bin/strawberry-controller.CREDITS
 FROM base-exec AS local-bloated
 
 COPY ./ytserver-all /usr/bin/ytserver-all
-COPY ./credits/ytserver-all.CREDITS /usr/bin/ytserver-all.CREDITS
+COPY ./ytserver-yql-agent /usr/bin/ytserver-yql-agent
+COPY ./credits/*.CREDITS /usr/bin
+COPY ./mrjob /usr/bin/mrjob
+COPY ./dq_vanilla_job /usr/bin/dq_vanilla_job
+COPY ./dq_vanilla_job.lite /usr/bin/dq_vanilla_job.lite
+COPY ./yql/* /usr/bin
 
 FROM scratch AS local
 COPY --from=local-bloated / /
