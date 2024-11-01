@@ -172,8 +172,8 @@ elif [[ "${component}" == "local" ]]; then
 
     # Credits.
     mkdir -p ${output_path}/credits
-    cp -r ${ytserver_all_credits}/*.CREDITS ${output_path}/credits
-    cp -r ${qt_credits}/*.CREDITS ${output_path}/credits
+    cp ${ytserver_all_credits}/*.CREDITS ${output_path}/credits
+    cp ${qt_credits}/*.CREDITS ${output_path}/credits
 
 else
     echo "Unknown component: ${component}"
