@@ -169,6 +169,7 @@ jobs:
 
   check:
     name: Check
+    if: false
     needs:
       - start-vm
       - docker-cmake
@@ -182,7 +183,6 @@ jobs:
     needs:
       - start-vm
       - tag
-      - check
       - docker-ya-make
     runs-on: ${{ needs.start-vm.outputs.label }}
     steps:

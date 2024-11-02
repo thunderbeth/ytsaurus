@@ -141,7 +141,7 @@ elif [[ "${component}" == "strawberry" ]]; then
 elif [[ "${component}" == "local" ]]; then
 
     ytserver_all="${ytsaurus_build_path}/yt/yt/server/all/ytserver-all"
-    ytserver_all_credits="${ytsaurus_source_path}/yt/docker/ytsaurus/credits/ytsaurus/ytserver-all.CREDITS"
+    ytserver_all_credits="${ytsaurus_source_path}/yt/docker/ytsaurus/credits/ytsaurus"
 
     ytserver_yql_agent="${yql_build_path}/yt/yql/agent/bin/ytserver-yql-agent"
     init_query_tracker_state="${ytsaurus_source_path}/yt/python/yt/environment/init_query_tracker_state.py"
@@ -172,8 +172,8 @@ elif [[ "${component}" == "local" ]]; then
 
     # Credits.
     mkdir -p ${output_path}/credits
-    cp ${ytserver_all_credits}/*.CREDITS ${output_path}/credits
-    cp ${qt_credits}/*.CREDITS ${output_path}/credits
+    cp -r ${ytserver_all_credits}/*.CREDITS ${output_path}/credits
+    cp -r ${qt_credits}/*.CREDITS ${output_path}/credits
 
 else
     echo "Unknown component: ${component}"
