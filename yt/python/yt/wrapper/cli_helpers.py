@@ -111,7 +111,9 @@ class ParseStructuredArguments(Action):
         self.action_load_method = action_load_method
 
     def __call__(self, parser, namespace, values, option_string=None):
-        setattr(namespace, self.dest, builtins.list(map(self.action_load_method, values)))
+        old_value = get_value(getattr(namespace, self.dest), [])
+        new_value = old_value + [self.action_load_method(values)]
+        setattr(namespace, self.dest, new_value)
 
 
 def populate_argument_help(parser):
