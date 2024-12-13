@@ -188,7 +188,10 @@ TInputChunk::TInputChunk(const NProto::TChunkSpec& chunkSpec, std::optional<int>
         ? std::make_unique<NTableClient::NProto::THunkChunkRefsExt>(
             GetProtoExtension<NTableClient::NProto::THunkChunkRefsExt>(chunkSpec.chunk_meta().extensions()))
         : nullptr)
+    , OffshoreReplicas_(FromProto<TChunkReplicaWithMediumList>(chunkSpec.offshore_replicas()))
 {
+    Cerr << Format("KEK Created chunk (ChunkId: %v, OffshoreReplicaCount: %v)", ChunkId_, std::ssize(OffshoreReplicas_)) << Endl;
+
     if (IsSortedDynamicStore()) {
         BoundaryKeys_ = std::make_unique<TOwningBoundaryKeys>();
         BoundaryKeys_->MinKey = LowerLimit_ && LowerLimit_->HasLegacyKey() ? LowerLimit_->GetLegacyKey() : MinKey();
@@ -240,6 +243,9 @@ void TInputChunk::RegisterMetadata(auto&& registrar)
     PHOENIX_REGISTER_FIELD(8, HunkChunkRefsExt_,
         .SinceVersion(static_cast<int>(ESnapshotVersion::RemoteCopyDynamicTableWithHunks))
         .template Serializer<TUniquePtrSerializer<>>());
+    PHOENIX_REGISTER_FIELD(9, OffshoreReplicas_,
+        .SinceVersion(static_cast<int>(NControllerAgent::ESnapshotVersion::OffshoreReplicas)));
+        // .template Serializer<TUniquePtrSerializer<>>());
 }
 
 size_t TInputChunk::SpaceUsed() const
@@ -374,6 +380,11 @@ void ToProto(NProto::TChunkSpec* chunkSpec, const TInputChunkPtr& inputChunk)
     auto replicas = inputChunk->GetReplicaList();
     ToProto(chunkSpec->mutable_legacy_replicas(), TChunkReplicaWithMedium::ToChunkReplicas(replicas));
     ToProto(chunkSpec->mutable_replicas(), replicas);
+    // TODO(achulkov2): This might be an important place not to miss if adding a new type of replicas.
+
+    Cerr << Format("KEK Serializing chunk (ChunkId: %v, OffshoreReplicaCount: %v)", inputChunk->GetChunkId(), inputChunk->OffshoreReplicas().size()) << Endl;
+
+    ToProto(chunkSpec->mutable_offshore_replicas(), inputChunk->OffshoreReplicas());
 
     if (inputChunk->TableIndex_ >= 0) {
         chunkSpec->set_table_index(inputChunk->TableIndex_);
@@ -438,12 +449,13 @@ void FormatValue(TStringBuilderBase* builder, const TInputChunkPtr& inputChunk, 
 
     Format(
         builder,
-        "{ChunkId: %v, Replicas: %v, TableIndex: %v, ErasureCodec: %v, StripedErasure: %v, TableRowIndex: %v, "
+        "{ChunkId: %v, Replicas: %v, OffshoreReplicas: %v, TableIndex: %v, ErasureCodec: %v, StripedErasure: %v, TableRowIndex: %v, "
         "RangeIndex: %v, ChunkIndex: %v, TabletIndex: %v, ChunkFormat: %v, UncompressedDataSize: %v, RowCount: %v, "
         "CompressedDataSize: %v, DataWeight: %v, MaxBlockSize: %v, LowerLimit: %v, UpperLimit: %v, "
         "BoundaryKeys: {%v}, PartitionsExt: {%v}, HunkChunkRefsExt: {%v}}",
         inputChunk->GetChunkId(),
         inputChunk->GetReplicaList(),
+        inputChunk->OffshoreReplicas(),
         inputChunk->GetTableIndex(),
         inputChunk->GetErasureCodec(),
         inputChunk->GetStripedErasure(),
@@ -470,6 +482,11 @@ bool IsUnavailable(const TInputChunkPtr& inputChunk, EChunkAvailabilityPolicy po
 {
     if (inputChunk->IsDynamicStore()) {
         // It is up to the reader to locate the dynamic store.
+        return false;
+    }
+
+    // TODO(achulkov2): Fix me.
+    if (!inputChunk->OffshoreReplicas().empty()) {
         return false;
     }
 

@@ -64,6 +64,11 @@ bool IsUnavailable(
     const NProto::TChunkSpec& chunkSpec,
     EChunkAvailabilityPolicy policy)
 {
+    // TODO(achulkov2): Fix me.
+    if (chunkSpec.offshore_replicas_size() > 0) {
+        return false;
+    }
+
     auto replicas = GetReplicasFromChunkSpec(chunkSpec);
     auto codecId = FromProto<NErasure::ECodec>(chunkSpec.erasure_codec());
     return IsUnavailable(replicas, codecId, policy);

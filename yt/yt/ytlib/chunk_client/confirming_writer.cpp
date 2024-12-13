@@ -12,6 +12,7 @@
 #include "replication_writer.h"
 #include "session_id.h"
 #include "striped_erasure_writer.h"
+#include "s3_writer.h"
 
 #include <yt/yt/ytlib/api/native/client.h>
 #include <yt/yt/ytlib/api/native/connection.h>
@@ -264,6 +265,11 @@ private:
 
     IChunkWriterPtr CreateUnderlyingWriter() const
     {
+        // TODO(achulkov2): Fix me.
+        if (SessionId_.MediumIndex > 0) {
+            return CreateS3Writer(nullptr, nullptr, SessionId_);
+        }
+
         if (Options_->ErasureCodec == ECodec::None) {
             return CreateReplicationWriter(
                 Config_,
@@ -326,8 +332,11 @@ private:
 
         YT_LOG_DEBUG("Chunk closed");
 
-        auto replicas = UnderlyingWriter_->GetWrittenChunkReplicasInfo().Replicas;
-        YT_VERIFY(!replicas.empty());
+        auto writtenChunkReplicasInfo = UnderlyingWriter_->GetWrittenChunkReplicasInfo();
+
+        const auto& replicas = writtenChunkReplicasInfo.Replicas;
+        // YT_VERIFY(!replicas.empty());
+        const auto& offshoreReplicas = writtenChunkReplicasInfo.OffshoreReplicas;
 
         auto channel = Client_->GetMasterChannelOrThrow(EMasterChannelKind::Leader, CellTag_);
         TChunkServiceProxy proxy(channel);
@@ -352,6 +361,8 @@ private:
                 replicaInfo->set_replica(ToProto(TChunkReplicaWithMedium(replica)));
                 ToProto(replicaInfo->mutable_location_uuid(), replica.GetChunkLocationUuid());
             }
+
+            ToProto(req->mutable_offshore_replicas(), offshoreReplicas);
 
             if (SchemaId_ != NullTableSchemaId) {
                 ToProto(req->mutable_schema_id(), SchemaId_);

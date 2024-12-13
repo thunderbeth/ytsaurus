@@ -54,6 +54,12 @@ private:
     friend void FromProto(TChunkReplicaWithMedium* replica, ui64 value);
     friend void ToProto(NProto::TConfirmChunkReplicaInfo* value, TChunkReplicaWithLocation replica);
     friend void FromProto(TChunkReplicaWithLocation* replica, NProto::TConfirmChunkReplicaInfo value);
+
+    using TLoadContext = NPhoenix::TLoadContext;
+    using TSaveContext = NPhoenix::TSaveContext;
+    using TPersistenceContext = NPhoenix::TPersistenceContext;
+
+    PHOENIX_DECLARE_TYPE(TChunkReplicaWithMedium, 0x004d1b8e);
 };
 
 // These protect from accidently serializing TChunkReplicaWithMedium as ui32.
@@ -98,6 +104,7 @@ void FormatValue(TStringBuilderBase* builder, TChunkReplicaWithLocation replica,
 struct TWrittenChunkReplicasInfo
 {
     TChunkReplicaWithLocationList Replicas;
+    TChunkReplicaWithMediumList OffshoreReplicas;
     // Revision upon confirmation of the chunk. Not every writer is expected to set this field.
     NHydra::TRevision ConfirmationRevision = NHydra::NullRevision;
 };

@@ -139,6 +139,7 @@ void CanonizeCellTags(TCellTagList* cellTags)
 
 void PopulateChunkSpecWithReplicas(
     const TChunkLocationPtrWithReplicaInfoList& chunkReplicas,
+    const TMediumPtrWithReplicaInfoList& offshoreReplicas,
     bool fetchParityReplicas,
     NNodeTrackerServer::TNodeDirectoryBuilder* nodeDirectoryBuilder,
     NChunkClient::NProto::TChunkSpec* chunkSpec)
@@ -167,6 +168,7 @@ void PopulateChunkSpecWithReplicas(
 
     ToProto(chunkSpec->mutable_legacy_replicas(), replicas);
     ToProto(chunkSpec->mutable_replicas(), replicas);
+    ToProto(chunkSpec->mutable_offshore_replicas(), offshoreReplicas);
 }
 
 void BuildReplicalessChunkSpec(
@@ -280,8 +282,10 @@ void BuildChunkSpec(
         fetchAllMetaExtensions,
         extensionTags,
         chunkSpec);
+    // TODO(achulkov2): Fix me.
     PopulateChunkSpecWithReplicas(
         chunkReplicas,
+        /*offshoreReplicas*/ {},
         fetchParityReplicas,
         nodeDirectoryBuilder,
         chunkSpec);
@@ -428,6 +432,17 @@ private:
             }
         }
 
+        auto offshoreReplicas = chunkReplicaFetcher->GetOffshoreChunkReplicas(Chunks_);
+
+        // TODO(achulkov2): Created helper for this. Or maybe we can check once after both calls?
+        for (const auto& chunk : Chunks_) {
+            if (!IsObjectAlive(chunk)) {
+                ReplyError(TError("Chunk %v died during replica fetch",
+                    chunk->GetId()));
+                return false;
+            }
+        }
+
         for (auto& chunkSpec : *RpcContext_->Response().mutable_chunks()) {
             auto chunkId = FromProto<TChunkId>(chunkSpec.chunk_id());
             auto it = replicas.find(chunkId);
@@ -444,6 +459,7 @@ private:
             const auto& replicas = chunkReplicasOrError.Value();
             PopulateChunkSpecWithReplicas(
                 replicas,
+                GetOrDefault(offshoreReplicas, chunkId),
                 FetchContext_.FetchParityReplicas,
                 &NodeDirectoryBuilder_,
                 &chunkSpec);

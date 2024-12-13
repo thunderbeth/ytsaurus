@@ -172,6 +172,7 @@ public:
     bool HasParents() const;
 
     TRange<TChunkLocationPtrWithReplicaInfo> StoredReplicas() const;
+    TRange<TMediumPtrWithReplicaInfo> StoredOffshoreReplicas() const;
 
     //! For non-erasure chunks, contains a FIFO queue of seen replicas; its tail position is kept in #CurrentLastSeenReplicaIndex_.
     //! For erasure chunks, this array is directly addressed by replica indexes; at most one replica is kept per part.
@@ -182,6 +183,11 @@ public:
         const TDomesticMedium* medium,
         bool approved);
     void RemoveReplica(TChunkLocationPtrWithReplicaIndex replica, bool approved);
+
+    // TODO(achulkov2): Do we need master approval for offshore replicas?
+    void AddOffshoreReplica(
+        TMediumPtrWithReplicaInfo replica);
+    // TODO(achulkov2): Removal.
 
     void ApproveReplica(TChunkLocationPtrWithReplicaInfo replica);
     int GetApprovedReplicaCount() const;
@@ -461,6 +467,16 @@ private:
     static_assert(ErasureChunkLastSeenReplicaCount >= ::NErasure::MaxTotalPartCount, "ErasureChunkLastSeenReplicaCount < NErasure::MaxTotalPartCount");
     using TErasureChunkReplicasData = TReplicasData<ErasureChunkTypicalReplicaCount, ErasureChunkLastSeenReplicaCount>;
 
+    struct TOffshoreReplicasData
+    {
+        using TStoredReplicas = TCompactVector<TMediumPtrWithReplicaInfo, 1>;
+
+        TStoredReplicas StoredReplicas;
+
+        void Load(NCellMaster::TLoadContext& context);
+        void Save(NCellMaster::TSaveContext& context) const;
+    };
+
     // COMPAT(gritukan)
     static constexpr int OldLastSeenReplicaCount = 16;
 
@@ -469,11 +485,19 @@ private:
     //! It also separates relatively mutable data from static one,
     //! which helps to avoid excessive CoW during snapshot construction.
     std::unique_ptr<TReplicasDataBase> ReplicasData_;
-
+    // TODO(achulkov2): How can we store this efficiently, and how can we
+    // share code with regular replicas without killing ourselves?
+    // After we introduce some way to delete media after we get
+    // rid of indices, we will need some memory safety/ref-counting here.
+    std::unique_ptr<TOffshoreReplicasData> OffshoreReplicasData_;
+    
     TChunkRequisition ComputeAggregatedRequisition(const TChunkRequisitionRegistry* registry);
 
     const TReplicasDataBase& ReplicasData() const;
     TReplicasDataBase* MutableReplicasData();
+
+    const TOffshoreReplicasData& OffshoreReplicasData() const;
+    TOffshoreReplicasData* MutableOffshoreReplicasData();
 
     void UpdateAggregatedRequisitionIndex(
         TChunkRequisitionRegistry* registry,
@@ -490,7 +514,7 @@ private:
 DEFINE_MASTER_OBJECT_TYPE(TChunk)
 
 // Think twice before increasing this.
-YT_STATIC_ASSERT_SIZEOF_SANITY(TChunk, 288);
+YT_STATIC_ASSERT_SIZEOF_SANITY(TChunk, 296);
 
 ////////////////////////////////////////////////////////////////////////////////
 

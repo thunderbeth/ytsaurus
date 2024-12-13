@@ -27,7 +27,6 @@
 #include <util/generic/cast.h>
 
 namespace NYT::NChunkClient {
-
 using namespace NApi;
 using namespace NApi::NNative;
 using namespace NChunkClient;

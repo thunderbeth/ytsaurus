@@ -197,6 +197,11 @@ void TReplicationReaderConfig::Register(TRegistrar registrar)
 
 ////////////////////////////////////////////////////////////////////////////////
 
+void TS3ReaderConfig::Register(TRegistrar /*registrar*/)
+{ }
+
+////////////////////////////////////////////////////////////////////////////////
+
 void TBlockFetcherConfig::Register(TRegistrar registrar)
 {
     registrar.Parameter("window_size", &TThis::WindowSize)
@@ -331,6 +336,20 @@ int TReplicationWriterConfig::GetDirectUploadNodeCount()
     }
 
     return std::max(static_cast<int>(std::sqrt(replicationFactor)), 1);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void TS3WriterConfig::Register(TRegistrar registrar) {
+    registrar.Parameter("upload_part_size", &TThis::UploadPartSize)
+        // TODO(achulkov2): Drag this constant out somewhere. Probably to s3 client lib even.
+        .GreaterThanOrEqual(5_MB)
+        // Temporary, remove after config is properly exposed.
+        .Default(5_MB);
+        // .Default(64_MB);
+    registrar.Parameter("upload_queue_size_limit", &TThis::UploadQueueSizeLimit)
+        .GreaterThan(0)
+        .Default(128_MB);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

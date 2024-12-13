@@ -36,6 +36,11 @@ message TChunkSpec
     // Initial seeds replicas. The reader may ask the master for additional ones.
     repeated fixed64 replicas = 25;
 
+    // TODO(achulkov2): Introduce a separate message?
+    // We will need to pass the medium id somehow, once we get rid of medium indices.
+    // TODO(achulkov2): Think again whether this really needs to be a new part of the spec.
+    repeated fixed64 offshore_replicas = 27;
+
     optional int32 table_index = 7 [default = 0];
 
     optional int32 erasure_codec = 9 [default = 0];

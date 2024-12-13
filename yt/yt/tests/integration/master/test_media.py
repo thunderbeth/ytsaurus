@@ -5,7 +5,8 @@ from yt_commands import (
     create_domestic_medium, create_s3_medium, write_file,
     read_table, write_table, write_journal, wait_until_sealed,
     get_singular_chunk_id, set_account_disk_space_limit, get_account_disk_space_limit,
-    get_media, set_node_banned, set_all_nodes_banned, create_rack)
+    get_media, set_node_banned, set_all_nodes_banned, create_rack,
+    make_random_string, map)
 
 from yt.common import YtError
 
@@ -17,6 +18,61 @@ import builtins
 
 
 ################################################################################
+
+class TestS3Medium(YTEnvSetup):
+    NUM_MASTERS = 1
+    NUM_NODES = 3
+
+    NUM_SCHEDULERS = 1
+
+    S3_MEDIUM = "s3"
+
+    KB = 1024
+    MB = 1024 * KB
+
+    @classmethod
+    def on_masters_started(cls):
+        create_s3_medium(cls.S3_MEDIUM, {
+            "url": "http://localhost:9000",
+            "region": "us-east-1",
+            "bucket": "yt",
+            "access_key_id": "admin",
+            "secret_access_key": "password",
+        })
+        disk_space_limit = get_account_disk_space_limit("tmp", "default")
+        set_account_disk_space_limit("tmp", disk_space_limit, cls.S3_MEDIUM)
+
+    @authors("achulkov2")
+    def test_basic(self):
+        assert get("//sys/media/s3/@index") == 1
+
+        create("table", "//tmp/t", attributes={"primary_medium": self.S3_MEDIUM})
+        write_table("//tmp/t", {"a": "b"})
+        write_table("<append=%true>//tmp/t", {"c": "d"})
+
+        many_blocks = [{f"row_{i}": f"value_{i}"} for i in range(1000)]
+        write_table("<append=%true>//tmp/t", many_blocks, table_writer={"block_size": 64})
+
+        multiple_parts = [{f"key": make_random_string(length=self.MB // 2)} for i in range(25)]
+        write_table("<append=%true>//tmp/t", multiple_parts, table_writer={"block_size": 3 * self.MB})
+
+        assert read_table("//tmp/t", verbose=False) == [{"a": "b"}, {"c": "d"}] + many_blocks + multiple_parts
+
+    @authors("achulkov2")
+    def test_operation_basic(self):
+        create("table", "//tmp/in", attributes={"primary_medium": self.S3_MEDIUM})
+        create("table", "//tmp/out", attributes={"primary_medium": self.S3_MEDIUM})
+
+        write_table("//tmp/in", {"a": "b"})
+        assert read_table("//tmp/in") == [{"a": "b"}]
+
+        map(
+            command="cat",
+            in_="//tmp/in",
+            out="//tmp/out")
+        
+        assert read_table("//tmp/out") == [{"a": "b"}]
+
 
 
 @pytest.mark.enabled_multidaemon

@@ -315,6 +315,26 @@ public:
         return GetReplicas(chunks, sequoiaReplicasOrError, sequoiaChunkIds);
     }
 
+    TChunkToMediumPtrWithReplicaInfoList GetOffshoreChunkReplicas(
+        const std::vector<TEphemeralObjectPtr<TChunk>>& chunks) const override
+    {
+        YT_VERIFY(!HasMutationContext());
+        Bootstrap_->VerifyPersistentStateRead();
+
+        TChunkToMediumPtrWithReplicaInfoList result;
+        for (const auto& chunk : chunks) {
+            auto chunkId = chunk->GetId();
+
+            auto offshoreReplicas = chunk->StoredOffshoreReplicas();
+            // TODO(achulkov2): Isn't it kind of annoying that we don't just get the underlying list instead of TRange?
+            TMediumPtrWithReplicaInfoList replicaList(offshoreReplicas.begin(), offshoreReplicas.end());
+            // TODO(achulkov2): Duplicate chunks? Doesn't really matter for now.
+            result[chunkId] = replicaList;
+        }
+
+        return result;
+    }
+
     TFuture<TChunkLocationPtrWithReplicaInfoList> GetChunkReplicasAsync(
         TEphemeralObjectPtr<TChunk> chunk,
         bool includeUnapproved) const override

@@ -1,6 +1,7 @@
 #include "chunk_replica.h"
 #include "chunk.h"
 
+#include <yt/yt/server/master/chunk_server/medium_base.h>
 #include <yt/yt/server/master/node_tracker_server/node.h>
 
 #include <yt/yt/ytlib/chunk_client/public.h>
@@ -93,6 +94,15 @@ void ToProto(ui64* protoValue, TChunkLocationPtrWithReplicaIndex value)
 void ToProto(ui64* protoValue, TChunkLocationPtrWithReplicaInfo value)
 {
     ToProto(protoValue, TChunkLocationPtrWithReplicaIndex(value.GetPtr(), value.GetReplicaIndex()));
+}
+
+void ToProto(ui64* protoValue, TMediumPtrWithReplicaInfo value)
+{
+    TChunkReplicaWithMedium replica(
+        NNodeTrackerClient::InvalidNodeId,
+        value.GetReplicaIndex(),
+        value.GetPtr()->GetIndex());
+    NChunkClient::ToProto(protoValue, replica);
 }
 
 void ToProto(ui32* protoValue, TChunkLocationPtrWithReplicaIndex value)

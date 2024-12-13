@@ -128,6 +128,11 @@ public:
     //! NB: This factor overrides the value of the column selectivity factor.
     DEFINE_BYVAL_RW_PROPERTY(std::optional<double>, BlockSelectivityFactor);
 
+    // TODO(achulkov2): Move to POD part?
+    // TODO(achulkov2): Why this holder weirdness?
+    // using TOffshoreReplicaHolder = std::unique_ptr<TChunkReplicaWithMediumList>;
+    DEFINE_BYREF_RO_PROPERTY(TChunkReplicaWithMediumList, OffshoreReplicas);
+
 public:
     TInputChunk() = default;
     TInputChunk(TInputChunk&& other) = default;

@@ -9,6 +9,7 @@
 #include "input_chunk.h"
 #include "input_chunk_slice.h"
 #include "replication_reader.h"
+#include "s3_reader.h"
 
 #include <yt/yt/ytlib/chunk_client/proto/data_node_service.pb.h>
 
@@ -738,7 +739,7 @@ IChunkReaderPtr CreateRemoteReader(
             std::move(readers),
             /*testingOptions*/ std::nullopt,
             Logger);
-    } else {
+    } else if (chunkSpec.offshore_replicas_size() == 0) {
         YT_LOG_DEBUG("Creating regular remote reader");
 
         return CreateReplicationReader(
@@ -747,6 +748,10 @@ IChunkReaderPtr CreateRemoteReader(
             std::move(chunkReaderHost),
             chunkId,
             std::move(replicas));
+    } else {
+        YT_LOG_DEBUG("Creating offshore remote reader");
+
+        return CreateS3Reader(nullptr, nullptr, chunkId);
     }
 }
 

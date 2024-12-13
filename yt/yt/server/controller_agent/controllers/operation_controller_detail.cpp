@@ -4101,6 +4101,8 @@ void TOperationControllerBase::SafeOnIntermediateChunkLocated(
         return;
     }
 
+    // TODO(achulkov2): Think about S3.
+
     // Intermediate chunks are always replicated.
     if (IsUnavailable(replicas, NErasure::ECodec::None, GetChunkAvailabilityPolicy())) {
         OnIntermediateChunkUnavailable(chunkId);

@@ -259,6 +259,21 @@ DEFINE_REFCOUNTED_TYPE(TReplicationReaderConfig)
 
 ////////////////////////////////////////////////////////////////////////////////
 
+// TODO(achulkov2): Placeholder, fill.
+class TS3ReaderConfig
+    : public NYTree::TYsonStruct
+    // TODO(achulkov2): What do we need here?
+{
+public:
+    REGISTER_YSON_STRUCT(TS3ReaderConfig);
+
+    static void Register(TRegistrar registrar);
+};
+
+DEFINE_REFCOUNTED_TYPE(TS3ReaderConfig)
+
+////////////////////////////////////////////////////////////////////////////////
+
 class TBlockFetcherConfig
     : public virtual NYTree::TYsonStruct
 {
@@ -384,6 +399,28 @@ public:
 };
 
 DEFINE_REFCOUNTED_TYPE(TReplicationWriterConfig)
+
+////////////////////////////////////////////////////////////////////////////////
+
+// TODO(achulkov2): Placeholder, fill.
+class TS3WriterConfig
+    : public NYTree::TYsonStruct
+    // TODO(achulkov2): What do we need here?
+{
+public:
+    // TODO(achulkov2): Think about the fact that the number of parts is limited to 10000 in AWS S3.
+    //! Minimum part size for multipart upload.
+    i64 UploadPartSize;
+    //! Maximum window to be uploaded simultaneously.
+    // TODO(achulkov2): Rename to something with "window".
+    i64 UploadQueueSizeLimit;
+
+    REGISTER_YSON_STRUCT(TS3WriterConfig);
+
+    static void Register(TRegistrar registrar);
+};
+
+DEFINE_REFCOUNTED_TYPE(TS3WriterConfig)
 
 ////////////////////////////////////////////////////////////////////////////////
 

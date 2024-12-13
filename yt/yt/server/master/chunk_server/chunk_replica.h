@@ -218,6 +218,10 @@ using TChunkToLocationPtrWithReplicaInfoList = THashMap<TChunkId, TErrorOr<TChun
 using TChunkLocationPtrWithReplicaAndMediumIndex = TPtrWithReplicaAndMediumIndex<TChunkLocation>;
 using TChunkLocationPtrWithReplicaAndMediumIndexList = TCompactVector<TChunkLocationPtrWithReplicaAndMediumIndex, TypicalReplicaCount>;
 
+// TODO(achulkov2): Do we need replica state?
+using TMediumPtrWithReplicaInfo = TPtrWithReplicaInfo<TMedium>;
+using TMediumPtrWithReplicaInfoList = TCompactVector<TMediumPtrWithReplicaInfo, 1>;
+
 using TChunkPtrWithReplicaInfo = TPtrWithReplicaInfo<TChunk>;
 using TChunkPtrWithReplicaIndex = TPtrWithReplicaIndex<TChunk>;
 using TChunkPtrWithReplicaAndMediumIndex = TPtrWithReplicaAndMediumIndex<TChunk>;
@@ -276,6 +280,12 @@ struct TSequoiaChunkReplica
 
 void FromProto(TSequoiaChunkReplica* replica, const NProto::TSequoiaReplicaInfo& protoReplica);
 void ToProto(NProto::TSequoiaReplicaInfo* protoReplica, const TSequoiaChunkReplica& replica);
+
+////////////////////////////////////////////////////////////////////////////////
+
+//! Serializes xxx, replica index, medium index.
+// TODO(achulkov2): Use a separate message, like sequoia replicas.
+void ToProto(ui64* protoValue, TMediumPtrWithReplicaInfo value);
 
 ////////////////////////////////////////////////////////////////////////////////
 
