@@ -21,8 +21,6 @@ jobs:
     steps:
       - name: Calculate tag
         id: tag
-        outputs:
-          tag-name: ${{ steps.tag.outputs.TAG_NAME }}
         run: |
           if [ "${{ github.event_name }}" == "release" ]; then
             echo "TAG_NAME=${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
@@ -51,12 +49,10 @@ jobs:
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
-        needs:
-          - tag
         with:
           token: ${{ steps.generate-token.outputs.token }}
           commit-message: Update Documentation Release Notes
-          branch: ci/update-documentation-release-notes/${{ needs.tag.outputs.tag-name }}
+          branch: ci/update-documentation-release-notes/${{ steps.tag.outputs.TAG_NAME }}
           base: main
           title: "Update Release Notes"
           labels: |
