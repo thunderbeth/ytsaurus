@@ -19,13 +19,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Set up environment variables
-        id: set-env
+      - name: Calculate tag
+        id: tag
+        outputs:
+          tag-name: ${{ steps.tag.outputs.TAG_NAME }}
         run: |
           if [ "${{ github.event_name }}" == "release" ]; then
-            echo "TAG_NAME=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
+            echo "TAG_NAME=${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
           else
-            echo "TAG_NAME=${{ inputs.tag_name }}" >> $GITHUB_ENV
+            echo "TAG_NAME=${{ inputs.tag_name }}" >> $GITHUB_OUTPUT
           fi
 
       - name: Checkout
@@ -49,11 +51,16 @@ jobs:
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
+        needs:
+          - tag
         with:
           token: ${{ steps.generate-token.outputs.token }}
           commit-message: Update Documentation Release Notes
-          branch: ci/update-documentation-release-notes/$TAG_NAME
+          branch: ci/update-documentation-release-notes/${{ needs.tag.outputs.tag-name }}
           base: main
           title: "Update Release Notes"
+          labels: |
+            documentation
+            release-notes
           body: |
             Update release notes in the documentation.
