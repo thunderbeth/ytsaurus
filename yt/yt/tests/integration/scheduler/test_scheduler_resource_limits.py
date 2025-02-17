@@ -85,7 +85,7 @@ class TestSchedulerMemoryLimits(YTEnvSetup):
             assert "Memory limit exceeded" in inner_error["message"]
             attributes = inner_error["attributes"]
             assert "processes" in attributes
-            expected_cmdline = ["python", "-c", "import time; a=[1]*100000000; time.sleep(10)"]
+            expected_cmdline = ["python3", "-c", "import time; a=[1]*100000000; time.sleep(10)"]
             assert expected_cmdline in builtins.map(lambda x: x["cmdline"], attributes["processes"])
 
     @authors("max42", "ignat")
@@ -189,7 +189,7 @@ class TestMemoryReserveFactor(YTEnvSetup):
         op = map(
             in_="//tmp/t_in",
             out="//tmp/t_out",
-            command="python mapper.py",
+            command="python3 mapper.py",
             job_count=job_count,
             spec={
                 "resource_limits": {"cpu": 1},
@@ -269,7 +269,7 @@ class TestCumulativeMemoryStatistics(YTEnvSetup):
         op = map(
             in_="//tmp/t_in",
             out="//tmp/t_out",
-            command="python mapper.py",
+            command="python3 mapper.py",
             job_count=job_count,
             spec={
                 "resource_limits": {"cpu": 1},
@@ -355,7 +355,7 @@ class TestMemoryReserveMultiplier(YTEnvSetup):
 
         op = run_test_vanilla(
             track=True,
-            command="python mapper.py",
+            command="python3 mapper.py",
             job_count=1,
             spec={
                 "resource_limits": {"cpu": 1},
@@ -536,7 +536,7 @@ class TestResourceOverdraftAbort(YTEnvSetup):
         op_a = run_test_vanilla(
             track=False,
             command=with_breakpoint(
-                "python script_500.py & BREAKPOINT; python script_500.py",
+                "python3 script_500.py & BREAKPOINT; python3 script_500.py",
                 breakpoint_name="a",
             ),
             job_count=1,
@@ -567,7 +567,7 @@ class TestResourceOverdraftAbort(YTEnvSetup):
         op_b = run_test_vanilla(
             track=False,
             command=with_breakpoint(
-                "python script_500.py & BREAKPOINT; python script_500.py",
+                "python3 script_500.py & BREAKPOINT; python3 script_500.py",
                 breakpoint_name="b",
             ),
             job_count=1,
