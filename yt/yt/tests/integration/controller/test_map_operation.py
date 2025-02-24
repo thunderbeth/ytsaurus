@@ -2916,7 +2916,7 @@ print('{hello=world}')
                 b"#!/usr/bin/env python3",
                 b"import sys",
                 b"import base64",
-                b"print('{out=\"' + base64.standard_b64encode(sys.stdin.read()) + '\"}')",
+                b"print('{out=\"' + base64.standard_b64encode(sys.stdin.buffer.read()).decode() + '\"}')",
             ]
         )
 

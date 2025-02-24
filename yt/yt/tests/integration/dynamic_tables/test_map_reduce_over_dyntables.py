@@ -995,7 +995,7 @@ class MROverOrderedDynTablesHelper(YTEnvSetup):
                 "#!/usr/bin/env python3",
                 "import sys",
                 "import base64",
-                "print('{out=\"' + base64.standard_b64encode(sys.stdin.read()) + '\"}')",
+                "print('{out=\"' + base64.standard_b64encode(sys.stdin.buffer.read()).decode() + '\"}')",
             ]
         )
         create(b"file", b"//tmp/script.py", attributes={"executable": True})
