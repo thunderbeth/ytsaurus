@@ -123,7 +123,7 @@ class TestPoolMetrics(YTEnvSetup):
         # - writes something to stderr because we want to find our jobs in //sys/operations later
         map_cmd = (
             """for i in $(seq 10); do"""
-            """    python3 -c "import os; os.write(5, '{{value=$i}};')";"""
+            """    python3 -c "import os; os.write(5, b'{{value=$i}};')";"""
             """    dd if=/dev/urandom of={}/foo$i bs=1M count=1 oflag=direct;"""
             """    sync; sleep 0.5;"""
             """done;"""
@@ -559,8 +559,8 @@ class TestPoolMetrics(YTEnvSetup):
         create("table", "//tmp/t_output")
         write_table("<append=%true>//tmp/t_input", {"foo": "bar"})
 
-        before_breakpoint = """for i in $(seq 10) ; do python3 -c "import os; os.write(5, '{value=$i};')" ; sleep 0.5 ; done ; sleep 5 ; """
-        after_breakpoint = """for i in $(seq 9 -1 5) ; do python3 -c "import os; os.write(5, '{value=$i};')" ; sleep 0.5 ; done ; cat ; sleep 5 ; echo done > /dev/stderr ; """
+        before_breakpoint = """for i in $(seq 10) ; do python3 -c "import os; os.write(5, b'{value=$i};')" ; sleep 0.5 ; done ; sleep 5 ; """
+        after_breakpoint = """for i in $(seq 9 -1 5) ; do python3 -c "import os; os.write(5, b'{value=$i};')" ; sleep 0.5 ; done ; cat ; sleep 5 ; echo done > /dev/stderr ; """
 
         profiler = profiler_factory().at_scheduler(fixed_tags={"tree": "default", "pool": "unique_pool"})
         total_time_counter = profiler.counter("scheduler/pools/metrics/total_time")

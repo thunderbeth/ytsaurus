@@ -2069,10 +2069,10 @@ for l in sys.stdin:
     a, b = row["a"], row["b"]
     if a % 2 == 0:
         out_row = {"a": a // 2, "struct": row}
-        os.write(1, json.dumps(out_row) + "\\n")
+        os.write(1, json.dumps(out_row).encode() + b"\\n")
     else:
         out_row = {"a": a // 2, "struct1": {"a1": a - 1}}
-        os.write(4, json.dumps(out_row) + "\\n")
+        os.write(4, json.dumps(out_row).encode() + b"\\n")
 """
         create("file", "//tmp/mapper.py")
         write_file("//tmp/mapper.py", mapper)
@@ -2241,10 +2241,10 @@ for l in sys.stdin:
     a, b = row["a"], row["b"]
     if a % 2 == 0:
         out_row = {"a": a // 2, "struct": row}
-        os.write(1, json.dumps(out_row) + "\\n")
+        os.write(1, json.dumps(out_row).encode() + b"\\n")
     else:
         out_row = {"a": a // 2, "struct1": {"a1": a - 1}}
-        os.write(4, json.dumps(out_row) + "\\n")
+        os.write(4, json.dumps(out_row).encode() + b"\\n")
 """
         create("file", "//tmp/mapper.py")
         write_file("//tmp/mapper.py", mapper)
@@ -2263,7 +2263,7 @@ for l in sys.stdin:
     else:
         assert table_index == 1
         row["struct1"]["a1"] += 100
-    os.write(table_index * 3 + 1, json.dumps(row))
+    os.write(table_index * 3 + 1, json.dumps(row).encode())
 """
         create("file", "//tmp/reduce_combiner.py")
         write_file("//tmp/reduce_combiner.py", reduce_combiner)
@@ -2357,9 +2357,9 @@ for l in sys.stdin:
     row = json.loads(l)
     a, b = row["a"], row["b"]
     out_row = {"a": a, "struct": {"a": a**2, "b": str(a) * 3}}
-    os.write(1, json.dumps(out_row) + "\\n")
+    os.write(1, json.dumps(out_row).encode() + b"\\n")
     out_row = {"a": a, "struct": {"a": a**3, "b": str(a) * 5}}
-    os.write(4, json.dumps(out_row) + "\\n")
+    os.write(4, json.dumps(out_row).encode() + b"\\n")
 """
         create("file", "//tmp/mapper.py")
         write_file("//tmp/mapper.py", mapper)
@@ -2534,7 +2534,7 @@ for l in sys.stdin:
         }},
     }}
     out_row_1.update(key)
-    os.write(1, json.dumps(out_row_1) + "\\n")
+    os.write(1, json.dumps(out_row_1).encode() + b"\\n")
     out_row_2 = {{
         "struct1": {{
             "a1": a,
@@ -2542,7 +2542,7 @@ for l in sys.stdin:
         }},
     }}
     out_row_2.update(key)
-    os.write(4, json.dumps(out_row_2) + "\\n")
+    os.write(4, json.dumps(out_row_2).encode() + b"\\n")
 """
         create("file", "//tmp/mapper.py")
         write_file("//tmp/mapper.py", mapper.format(row_count=row_count).encode())

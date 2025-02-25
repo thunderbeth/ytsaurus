@@ -548,7 +548,7 @@ def read(n):
     bufs = []
     left = n
     while left > 0:
-        bufs.append(sys.stdin.read(left))
+        bufs.append(sys.stdin.buffer.read(left))
         left -= len(bufs[-1])
         if len(bufs[-1]) == 0:
             assert left == n or left == 0
