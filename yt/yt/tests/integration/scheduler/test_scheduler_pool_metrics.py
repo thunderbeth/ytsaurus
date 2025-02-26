@@ -494,7 +494,7 @@ class TestPoolMetrics(YTEnvSetup):
             output_format="json",
         )
 
-        map_cmd = """python3 -c 'import sys; import time; import json; row=json.loads(raw_input()); time.sleep(row["sleep"]); sys.exit(row["exit"])'"""
+        map_cmd = """python3 -c 'import sys; import time; import json; row=json.loads(input()); time.sleep(row["sleep"]); sys.exit(row["exit"])'"""
 
         profiler = profiler_factory().at_scheduler(fixed_tags={"tree": "default", "pool": "unique_pool"})
         total_time_counter = profiler.counter("scheduler/pools/metrics/total_time")

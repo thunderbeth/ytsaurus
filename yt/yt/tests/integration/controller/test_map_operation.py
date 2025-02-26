@@ -1407,7 +1407,7 @@ print(row + table_index)
 
 import json
 
-input = json.loads(raw_input())
+input = json.loads(input())
 old_value = input["value"]
 input["value"] = "(job)"
 print(json.dumps(input))
